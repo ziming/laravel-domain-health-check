@@ -9,7 +9,6 @@ use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
-use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
@@ -110,6 +109,7 @@ class DomainCheck extends Check
             return null;
             // throw new RuntimeException('Cannot find domain expiry datetime from whois data.');
         }
+
         return new CarbonImmutable($matches[1]);
     }
 }

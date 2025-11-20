@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Process;
 use Spatie\Rdap\Facades\Rdap;
-use Illuminate\Support\Str;
 
 it('can fetch whois of a domain', function () {
 
