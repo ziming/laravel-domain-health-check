@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Ziming\LaravelDomainHealthCheck;
 
+use Carbon\Carbon;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Uri;
 use Spatie\Health\Checks\Check;
@@ -31,7 +33,9 @@ class DomainCheck extends Check
 
     public function run(): Result
     {
-        $this->saveWhoisData();
+        $this->whoisOutput = Cache::remember('domain-whois-data:' . $this->domain, Carbon::now()->addDay(), function (): string {
+            return $this->fetchWhoisData();
+        });
 
         $domainExpiryDateTime = $this->getDomainExpiryDateTime();
 
@@ -78,12 +82,10 @@ class DomainCheck extends Check
         return $this;
     }
 
-    private function saveWhoisData(): void
+    private function fetchwhoisData(): string
     {
-        if ($this->whoisOutput === null) {
-            $result = Process::run(['whois', $this->domain]);
-            $this->whoisOutput = $result->output();
-        }
+        $result = Process::run(['whois', $this->domain]);
+        return $result->output();
     }
 
     public function getDomainExpiryDateTime(): ?CarbonInterface
