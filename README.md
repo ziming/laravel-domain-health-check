@@ -6,7 +6,7 @@
 [![Total Downloads](https://img.shields.io/packagist/dt/ziming/laravel-domain-health-check.svg?style=flat-square)](https://packagist.org/packages/ziming/laravel-domain-health-check)
 
 Domain Health Check for [Spatie Laravel Health](https://github.com/spatie/laravel-health) Package. Which also works with
-[Oh Dear](https://ohdear.app/?via=laravel-health-memory) monitoring service.
+[Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) monitoring service.
 
 Currently it uses the Whois protocol to fetch the domain expiry datetime. This fills a missing gap in [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) as Oh Dear
 only supports RDAP domain expiry checks at the moment, which does not work for many TLDs.
@@ -41,7 +41,8 @@ Health::checks([
     DomainCheck::new()
         ->domain('example.com') // by default, it uses your app.url config host if you did not call this method
         ->warnWhenDaysLeftToDomainExpiry(28)
-        ->failWhenDaysLeftToDomainExpiry(7),
+        ->failWhenDaysLeftToDomainExpiry(7)
+        ->daily(),
 ]);
 ```
 
