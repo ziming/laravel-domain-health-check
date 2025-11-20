@@ -7,9 +7,9 @@ namespace Ziming\LaravelDomainHealthCheck;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Uri;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
-use Illuminate\Support\Uri;
 
 class DomainCheck extends Check
 {
@@ -21,7 +21,8 @@ class DomainCheck extends Check
 
     private int $errorWhenLessThanDaysLeft = 7;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->domain = Uri::of(config('app.url'))
             ->host();
 
@@ -91,9 +92,9 @@ class DomainCheck extends Check
         // Credits to: https://www.conroyp.com/articles/monitoring-domain-expiration-dates-using-laravels-process-facade
 
         // actually should I just use `whois domain.com | grep "Expiry Date"` instead?
-        if (!preg_match('/Registry Expiry Date: (.*)/', $this->whoisOutput, $matches)) {
+        if (! preg_match('/Registry Expiry Date: (.*)/', $this->whoisOutput, $matches)) {
             return null;
-            //throw new RuntimeException('Cannot find domain expiry datetime from whois data.');
+            // throw new RuntimeException('Cannot find domain expiry datetime from whois data.');
         }
 
         return new CarbonImmutable($matches[1]);

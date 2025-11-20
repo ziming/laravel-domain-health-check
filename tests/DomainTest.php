@@ -10,5 +10,3 @@ it('can fetch whois of a domain', function () {
         ->toContain('Registry Expiry Date');
 
 });
-
-
