@@ -8,12 +8,11 @@
 Domain Health Check for [Spatie Laravel Health](https://github.com/spatie/laravel-health) Package. Which also works with
 [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) monitoring service.
 
-Currently it uses the Whois protocol to fetch the domain expiry datetime. This fills a missing gap in [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) as Oh Dear
-only supports RDAP domain expiry checks at the moment, which does not work for many TLDs.
+It 1st attempts an RDAP lookup for the domain expiry date, if that fails (e.g. many TLDs do not support RDAP yet), it falls back to a WHOIS lookup.
+
+This fills a missing gap in [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) as Oh Dear only supports RDAP domain expiry checks at the moment, which does not work for many TLDs.
 
 So by using this package, you get to monitor your domain expiry dates in both Laravel Health and Oh Dear.
-
-In the future this package may support RDAP domain expiry check too.
 
 ## Support me
 
