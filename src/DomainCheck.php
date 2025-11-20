@@ -33,7 +33,7 @@ class DomainCheck extends Check
 
     public function run(): Result
     {
-        $this->whoisOutput = Cache::remember('domain-whois-data:' . $this->domain, Carbon::now()->addDay(), function (): string {
+        $this->whoisOutput = Cache::remember('domain-whois-data:'.$this->domain, Carbon::now()->addDay(), function (): string {
             return $this->fetchWhoisData();
         });
 
@@ -85,6 +85,7 @@ class DomainCheck extends Check
     private function fetchwhoisData(): string
     {
         $result = Process::run(['whois', $this->domain]);
+
         return $result->output();
     }
 
