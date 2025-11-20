@@ -14,6 +14,9 @@ This fills a missing gap in [Oh Dear](https://ohdear.app/?via=laravel-health-dom
 
 So by using this package, you get to monitor your domain expiry dates in both Laravel Health and Oh Dear.
 
+You may also wish to check out my other Laravel Health related packages that fills in the missing gaps in Laravel Health and Oh Dear monitoring:
+- [Memory Usage Health Check](https://github.com/ziming/laravel-memory-health-check)
+
 ## Support me
 
 You can donate to my GitHub sponsor or use my referral link for [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) so I get a small reward if you become a paid customer in the future. This comes at no extra cost to you and helps support my open source work.
