@@ -1,68 +1,48 @@
-# :package_description
+# Domain Health Check for Laravel Health and Oh Dear
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/:vendor_slug/:package_slug/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/:vendor_slug/:package_slug/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
-[![Total Downloads](https://img.shields.io/packagist/dt/:vendor_slug/:package_slug.svg?style=flat-square)](https://packagist.org/packages/:vendor_slug/:package_slug)
-<!--delete-->
----
-This repo can be used to scaffold a Laravel package. Follow these steps to get started:
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/ziming/laravel-domain-health-check.svg?style=flat-square)](https://packagist.org/packages/ziming/laravel-domain-health-check)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/ziming/laravel-domain-health-check/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/ziming/laravel-domain-health-check/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/ziming/laravel-domain-health-check/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/ziming/laravel-domain-health-check/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Total Downloads](https://img.shields.io/packagist/dt/ziming/laravel-domain-health-check.svg?style=flat-square)](https://packagist.org/packages/ziming/laravel-domain-health-check)
 
-1. Press the "Use this template" button at the top of this repo to create a new repo with the contents of this skeleton.
-2. Run "php ./configure.php" to run a script that will replace all placeholders throughout all the files.
-3. Have fun creating your package.
-4. If you need help creating a package, consider picking up our <a href="https://laravelpackage.training">Laravel Package Training</a> video course.
----
-<!--/delete-->
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Domain Health Check for [Spatie Laravel Health](https://github.com/spatie/laravel-health) Package. Which also works with
+[Oh Dear](https://ohdear.app/?via=laravel-health-memory) monitoring service.
 
-## Support us
+Currently it uses the Whois protocol to fetch the domain expiry datetime. This fills a missing gap in [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) as Oh Dear
+only supports RDAP domain expiry checks at the moment, which does not work for many TLDs.
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/:package_name.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/:package_name)
+So by using this package, you get to monitor your domain expiry dates in both Laravel Health and Oh Dear.
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
+In the future this package may support RDAP domain expiry check too.
 
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+## Support me
+
+You can donate to my GitHub sponsor or use my referral link for [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check) so I get a small reward if you become a paid customer in the future. This comes at no extra cost to you and helps support my open source work.
+
+https://ohdear.app/?via=laravel-health-domain-check
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require :vendor_slug/:package_slug
-```
-
-You can publish and run the migrations with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-migrations"
-php artisan migrate
-```
-
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag=":package_slug-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag=":package_slug-views"
+composer require ziming/laravel-domain-health-check
 ```
 
 ## Usage
 
 ```php
-$variable = new VendorName\Skeleton();
-echo $variable->echoPhrase('Hello, VendorName!');
+// In your Laravel Health Service Provider register() method
+
+use Spatie\Health\Facades\Health;
+use Ziming\LaravelDomainHealthCheckHealthCheck\DomainCheck;
+
+Health::checks([
+    DomainCheck::new()
+        ->domain('example.com') // by default, it uses your app.url config host if you did not call this method
+        ->warnWhenDaysLeftToDomainExpiry(28)
+        ->failWhenDaysLeftToDomainExpiry(7),
+]);
 ```
 
 ## Testing
@@ -85,7 +65,7 @@ Please review [our security policy](../../security/policy) on how to report secu
 
 ## Credits
 
-- [:author_name](https://github.com/:author_username)
+- [ziming](https://github.com/ziming)
 - [All Contributors](../../contributors)
 
 ## License
