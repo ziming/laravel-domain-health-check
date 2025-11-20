@@ -35,8 +35,8 @@ class DomainCheck extends Check
 
         $domainExpiryDateTime = $this->getDomainExpiryDateTime();
 
-        $daysLeft = (int) $domainExpiryDateTime
-            ?->diffInDays(CarbonImmutable::now(), true);
+        $daysLeft = (int) CarbonImmutable::now()
+            ->diffInDays($domainExpiryDateTime);
 
         $result = Result::make()
             ->meta([
