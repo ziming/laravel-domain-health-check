@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
+use Spatie\Rdap\Facades\Rdap;
 
 class DomainCheck extends Check
 {
@@ -34,11 +35,18 @@ class DomainCheck extends Check
 
     public function run(): Result
     {
-        $this->whoisOutput = Cache::remember('domain-whois-data:'.$this->domain, Carbon::now()->addDay(), function (): string {
-            return $this->fetchWhoisData();
-        });
+        $domainSupportRdap = Rdap::domainIsSupported($this->domain);
 
-        $domainExpiryDateTime = $this->getDomainExpiryDateTime();
+        if ($domainSupportRdap === true) {
+            $domainExpiryDateTime = Rdap::domain($this->domain)
+                ?->expirationDate();
+        } else {
+            $this->whoisOutput = Cache::remember('domain-whois-data:'.$this->domain, Carbon::now()->addDay(), function (): string {
+                return $this->fetchWhoisData();
+            });
+
+            $domainExpiryDateTime = $this->getDomainExpiryDateTime();
+        }
 
         $daysLeft = (int) CarbonImmutable::now()
             ->diffInDays($domainExpiryDateTime);
@@ -87,7 +95,7 @@ class DomainCheck extends Check
 
     private function fetchWhoisData(): string
     {
-        $result = Process::run(['whois', $this->domain, 'Registry Expiry Date: ']);
+        $result = Process::run(['whois', $this->domain, '| grep Registry Expiry Date: ']);
 
         return $result->output();
     }
