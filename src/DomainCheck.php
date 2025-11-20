@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Uri;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
+use Spatie\Rdap\CouldNotFindRdapServer;
 use Spatie\Rdap\Facades\Rdap;
 
 class DomainCheck extends Check
@@ -32,6 +33,9 @@ class DomainCheck extends Check
         parent::__construct();
     }
 
+    /**
+     * @throws CouldNotFindRdapServer
+     */
     public function run(): Result
     {
         $domainSupportRdap = Rdap::domainIsSupported($this->domain);
