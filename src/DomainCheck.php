@@ -9,6 +9,7 @@ use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Str;
 use Illuminate\Support\Uri;
 use Spatie\Health\Checks\Check;
 use Spatie\Health\Checks\Result;
@@ -42,11 +43,13 @@ class DomainCheck extends Check
         $daysLeft = (int) CarbonImmutable::now()
             ->diffInDays($domainExpiryDateTime);
 
+        $domainExpiryDateTimeInDayDateTimeString = $domainExpiryDateTime
+            ?->timezone($this->timezone)
+            ?->toDayDateTimeString();
+
         $result = Result::make()
             ->meta([
-                'domain_expiry_datetime' => $domainExpiryDateTime
-                    ?->timezone($this->timezone)
-                    ?->toDayDateTimeString(),
+                'domain_expiry_datetime' => $domainExpiryDateTimeInDayDateTimeString,
                 'days_left' => $daysLeft,
             ]);
 
@@ -58,7 +61,7 @@ class DomainCheck extends Check
             return $result->warning("Domain is expiring soon! {$daysLeft} days left!");
         }
 
-        return $result->ok("Days left to domain expiry: {$daysLeft} days.");
+        return $result->ok("Domain Expiry datetime is {$domainExpiryDateTimeInDayDateTimeString}");
     }
 
     public function warnWhenDaysLeftToDomainExpiry(int $daysLeft): self
@@ -82,23 +85,23 @@ class DomainCheck extends Check
         return $this;
     }
 
-    private function fetchwhoisData(): string
+    private function fetchWhoisData(): string
     {
-        $result = Process::run(['whois', $this->domain]);
+        $result = Process::run(['whois', $this->domain, 'Registry Expiry Date: ']);
 
         return $result->output();
     }
 
     public function getDomainExpiryDateTime(): ?CarbonInterface
     {
-        // Credits to: https://www.conroyp.com/articles/monitoring-domain-expiration-dates-using-laravels-process-facade
-
         // actually should I just use `whois domain.com | grep "Expiry Date"` instead?
-        if (! preg_match('/Registry Expiry Date: (.*)/', $this->whoisOutput, $matches)) {
+        $expiryDateTime = Str::after($this->whoisOutput, 'Registry Expiry Date: ');
+
+        if ($expiryDateTime === '') {
             return null;
             // throw new RuntimeException('Cannot find domain expiry datetime from whois data.');
         }
 
-        return new CarbonImmutable($matches[1]);
+        return new CarbonImmutable($expiryDateTime);
     }
 }
