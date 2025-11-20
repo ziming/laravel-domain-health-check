@@ -95,7 +95,7 @@ class DomainCheck extends Check
 
     private function fetchWhoisData(): string
     {
-        $result = Process::run(['whois', $this->domain, '| grep Registry Expiry Date: ']);
+        $result = Process::run(['whois', $this->domain]);
 
         return $result->output();
     }
@@ -103,13 +103,13 @@ class DomainCheck extends Check
     public function getDomainExpiryDateTime(): ?CarbonInterface
     {
         // actually should I just use `whois domain.com | grep "Expiry Date"` instead?
-        $expiryDateTime = Str::after($this->whoisOutput, 'Registry Expiry Date: ');
 
-        if ($expiryDateTime === '') {
+        // Credits to: https://www.conroyp.com/articles/monitoring-domain-expiration-dates-using-laravels-process-facade
+
+        if (! preg_match('/Registry Expiry Date: (.*)/', $this->whoisOutput, $matches)) {
             return null;
             // throw new RuntimeException('Cannot find domain expiry datetime from whois data.');
         }
-
-        return new CarbonImmutable($expiryDateTime);
+        return new CarbonImmutable($matches[1]);
     }
 }
