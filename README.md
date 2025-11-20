@@ -39,10 +39,10 @@ use Ziming\LaravelDomainHealthCheckHealthCheck\DomainCheck;
 
 Health::checks([
     DomainCheck::new()
+        ->daily()
         ->domain('example.com') // by default, it uses your app.url config host if you did not call this method
         ->warnWhenDaysLeftToDomainExpiry(28)
-        ->failWhenDaysLeftToDomainExpiry(7)
-        ->daily(),
+        ->failWhenDaysLeftToDomainExpiry(7),
 ]);
 ```
 

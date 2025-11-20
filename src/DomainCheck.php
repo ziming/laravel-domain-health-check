@@ -36,15 +36,14 @@ class DomainCheck extends Check
         $domainExpiryDateTime = $this->getDomainExpiryDateTime();
 
         $daysLeft = (int) $domainExpiryDateTime
-            ?->diffInDays(CarbonImmutable::now());
+            ?->diffInDays(CarbonImmutable::now(), true);
 
         $result = Result::make()
             ->meta([
                 'domain_expiry_datetime' => $domainExpiryDateTime
                     ?->timezone($this->timezone)
                     ?->toDayDateTimeString(),
-                'days_left' => $domainExpiryDateTime
-                    ?->diffInDays(CarbonImmutable::now()),
+                'days_left' => $daysLeft,
             ]);
 
         if ($domainExpiryDateTime < CarbonImmutable::now()->addDays($this->warningWhenLessThanDaysLeft)) {
@@ -55,7 +54,7 @@ class DomainCheck extends Check
             return $result->warning("Domain is expiring soon! {$daysLeft} days left!");
         }
 
-        return $result->ok();
+        return $result->ok("Days left to domain expiry: {$daysLeft} days.");
     }
 
     public function warnWhenDaysLeftToDomainExpiry(int $daysLeft): self
