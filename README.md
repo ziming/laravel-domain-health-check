@@ -48,6 +48,13 @@ Health::checks([
 ]);
 ```
 
+If it works you will be getting the following in Laravel Health and [Oh Dear](https://ohdear.app/?via=laravel-health-domain-check)
+
+<img width="738" height="268" alt="Laravel Health Screenshot" src="https://github.com/user-attachments/assets/2b53d8a4-43b9-426c-9126-b1951f90df97" />
+
+
+<img width="2140" height="806" alt="Oh Dear Screenshot" src="https://github.com/user-attachments/assets/c73cdafb-076c-433d-baef-5bc92bde14af" />
+
 ## Testing
 
 ```bash
