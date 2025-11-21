@@ -14,6 +14,8 @@ This fills a missing gap in [Oh Dear](https://ohdear.app/?via=laravel-health-dom
 
 So by using this package, you get to monitor your domain expiry dates in both Laravel Health and Oh Dear even if your domain TLD does not support RDAP.
 
+In the future there may be more domain related health checks added to this package.
+
 You may also wish to check out my other Laravel Health related packages that fills in the missing gaps in Laravel Health and Oh Dear monitoring:
 - [Memory Usage Health Check](https://github.com/ziming/laravel-memory-health-check)
 
