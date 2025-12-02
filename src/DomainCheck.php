@@ -41,14 +41,28 @@ class DomainCheck extends Check
         $domainSupportRdap = Rdap::domainIsSupported($this->domain);
 
         if ($domainSupportRdap === true) {
-            $domainExpiryDateTime = Rdap::domain($this->domain)
+
+            $rdapDomainResponse = Rdap::domain($this->domain);
+
+            $domainExpiryDateTime = $rdapDomainResponse
                 ?->expirationDate();
+
+            $domainRegistrationDateTime = $rdapDomainResponse
+                ?->registrationDate();
+
+            $domainUpdatedAtDatetime = $rdapDomainResponse
+                ?->lastChangedDate();
+
         } else {
             $this->whoisOutput = Cache::remember('domain-whois-data:'.$this->domain, Carbon::now()->addDay(), function (): string {
                 return $this->fetchWhoisData();
             });
 
-            $domainExpiryDateTime = $this->getDomainExpiryDateTime();
+            $domainExpiryDateTime = $this->getWhoisDomainExpiryDateTime();
+
+            $domainRegistrationDateTime = $this->getWhoisRegistrationDateTime();
+
+            $domainUpdatedAtDatetime = $this->getWhoisUpdatedAtDateTime();
         }
 
         $daysLeft = (int) CarbonImmutable::now()
@@ -60,19 +74,20 @@ class DomainCheck extends Check
 
         $result = Result::make()
             ->meta([
-                'domain_expiry_datetime' => $domainExpiryDateTimeInDayDateTimeString,
+                'domain' => $this->domain,
+                'expiration_date' => $domainExpiryDateTimeInDayDateTimeString,
                 'days_left' => $daysLeft,
             ]);
 
         if ($domainExpiryDateTime < CarbonImmutable::now()->addDays($this->warningWhenLessThanDaysLeft)) {
-            return $result->warning("Domain is expiring soon. {$daysLeft} days left.");
+            return $result->warning("{$this->domain} is expiring soon. {$daysLeft} days left.");
         }
 
         if ($domainExpiryDateTime < CarbonImmutable::now()->addDays($this->errorWhenLessThanDaysLeft)) {
-            return $result->warning("Domain is expiring soon! {$daysLeft} days left!");
+            return $result->warning("{$this->domain}} is expiring soon! {$daysLeft} days left!");
         }
 
-        return $result->ok("Domain Expiry Datetime is {$domainExpiryDateTimeInDayDateTimeString}");
+        return $result->ok("{$this->domain} Expiry Datetime is {$domainExpiryDateTimeInDayDateTimeString}");
     }
 
     public function warnWhenDaysLeftToDomainExpiry(int $daysLeft): self
@@ -103,7 +118,7 @@ class DomainCheck extends Check
         return $result->output();
     }
 
-    public function getDomainExpiryDateTime(): ?CarbonInterface
+    public function getWhoisDomainExpiryDateTime(): ?CarbonInterface
     {
         // actually should I just use `whois domain.com | grep "Expiry Date"` instead?
 
@@ -112,6 +127,24 @@ class DomainCheck extends Check
         if (! preg_match('/Registry Expiry Date: (.*)/', $this->whoisOutput, $matches)) {
             return null;
             // throw new RuntimeException('Cannot find domain expiry datetime from whois data.');
+        }
+
+        return new CarbonImmutable($matches[1]);
+    }
+
+    public function getWhoisRegistrationDateTime(): ?CarbonInterface
+    {
+        if (! preg_match('/Creation Date: (.*)/', $this->whoisOutput, $matches)) {
+            return null;
+        }
+
+        return new CarbonImmutable($matches[1]);
+    }
+
+    public function getWhoisUpdatedAtDateTime(): ?CarbonInterface
+    {
+        if (! preg_match('/Updated Date: (.*)/', $this->whoisOutput, $matches)) {
+            return null;
         }
 
         return new CarbonImmutable($matches[1]);
