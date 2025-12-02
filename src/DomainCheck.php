@@ -97,7 +97,7 @@ class DomainCheck extends Check
             return $result->warning("{$this->domain}} is expiring soon! {$daysLeft} days left!");
         }
 
-        return $result->ok("{$this->domain} Expiry Datetime is {$domainExpiryDateTimeInDayDateTimeString}");
+        return $result->ok("{$this->domain} expires on {$domainExpiryDateTimeInDayDateTimeString}");
     }
 
     public function warnWhenDaysLeftToDomainExpiry(int $daysLeft): self
