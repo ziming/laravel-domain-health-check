@@ -72,11 +72,21 @@ class DomainCheck extends Check
             ?->timezone($this->timezone)
             ?->toDayDateTimeString();
 
+        $domainRegistrationDateTimeInDayDateTimeString = $domainRegistrationDateTime
+            ?->timezone($this->timezone)
+            ?->toDayDateTimeString();
+
+        $domainUpdatedAtDateTimeInDayDateTimeString = $domainUpdatedAtDatetime
+            ?->timezone($this->timezone)
+            ?->toDayDateTimeString();
+
         $result = Result::make()
             ->meta([
                 'domain' => $this->domain,
                 'expiration_date' => $domainExpiryDateTimeInDayDateTimeString,
                 'days_left' => $daysLeft,
+                'registration_date' => $domainRegistrationDateTimeInDayDateTimeString,
+                'last_changed_at' => $domainUpdatedAtDateTimeInDayDateTimeString,
             ]);
 
         if ($domainExpiryDateTime < CarbonImmutable::now()->addDays($this->warningWhenLessThanDaysLeft)) {
