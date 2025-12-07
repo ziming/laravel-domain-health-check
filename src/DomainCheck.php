@@ -89,11 +89,11 @@ class DomainCheck extends Check
                 'last_changed_at' => $domainUpdatedAtDateTimeInDayDateTimeString,
             ]);
 
-        if ($domainExpiryDateTime < CarbonImmutable::now()->addDays($this->warningWhenLessThanDaysLeft)) {
+        if ($domainExpiryDateTime <= CarbonImmutable::now()->addDays($this->warningWhenLessThanDaysLeft)) {
             return $result->warning("{$this->domain} is expiring soon. {$daysLeft} days left.");
         }
 
-        if ($domainExpiryDateTime < CarbonImmutable::now()->addDays($this->errorWhenLessThanDaysLeft)) {
+        if ($domainExpiryDateTime <= CarbonImmutable::now()->addDays($this->errorWhenLessThanDaysLeft)) {
             return $result->warning("{$this->domain}} is expiring soon! {$daysLeft} days left!");
         }
 
