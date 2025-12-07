@@ -54,7 +54,7 @@ class DomainCheck extends Check
                 ?->lastChangedDate();
 
         } else {
-            $this->whoisOutput = Cache::remember('domain-whois-data:'.$this->domain, Carbon::now()->addDay(), function (): string {
+            $this->whoisOutput = Cache::remember('domain-whois-data:'.$this->domain, Carbon::now()->addWeek(), function (): string {
                 return $this->fetchWhoisData();
             });
 
