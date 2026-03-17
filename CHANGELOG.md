@@ -5,3 +5,7 @@ All notable changes to `laravel-domain-health-check` will be documented in this 
 ## 1.1 - 2025-12-07
 
 Added registration date and last changed at information too
+
+## unreleased
+
+Add Laravel 13 support
